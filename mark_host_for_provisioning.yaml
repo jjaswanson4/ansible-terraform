@@ -14,4 +14,4 @@
           - name: provisioning
             inventory: VMware
             hosts:
-              - "{{ vsphere_name }}"
+              - "{{ vsphere_name }}.{{ vsphere_domain }}"
