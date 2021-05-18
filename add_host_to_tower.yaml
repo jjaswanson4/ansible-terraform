@@ -12,6 +12,6 @@
         tower_host: "{{ tower_hostname }}"
         tower_username: "{{ tower_username }}"
         tower_password: "{{ tower_password }}"
-        validate_certs: no
+        validate_certs: "{{ tower_validate_certs }}"
         name: "{{ vsphere_name }}.{{ vsphere_domain }}"
         inventory: "{{ tower_inventory }}"
