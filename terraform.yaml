@@ -44,7 +44,7 @@
           vsphere_datastore: "{{ vsphere_datastore }}"
           vsphere_domain: "{{ vsphere_domain }}"
           vsphere_hostname: "{{ lookup('env', 'VMWARE_HOST') }}"
-          vsphere_name: "{{ vsphere_name }}"
+          vsphere_name: "{{ vsphere_name }}.{{ vsphere_domain }}"
           vsphere_network: "{{ vsphere_network }}"
           vsphere_network_cidr: "{{ vsphere_network_cidr }}"
           vsphere_network_gateway: "{{ vsphere_network_gateway }}"
