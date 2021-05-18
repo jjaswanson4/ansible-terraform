@@ -60,7 +60,6 @@
             organization: "{{ tower_organization }}"
             project: Terraform Demo
             playbook: terraform.yaml
-            limit: provisioning
     - name: Add rhel job template
       include_role:
         name: redhat_cop.tower_configuration.job_templates
@@ -68,7 +67,7 @@
         tower_templates:
           - name: Terraform Demo - Ansible
             credentials: "{{ tower_credentials_ssh }}"
-            inventory: "{{ tower_inventory }}"
+            inventory: VMware
             organization: "{{ tower_organization }}"
             project: Terraform Demo
             playbook: rhel_config.yaml
