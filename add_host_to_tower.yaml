@@ -9,10 +9,10 @@
   tasks:
     - name: create host in tower inventory
       ansible.tower.tower_host:
-        tower_host: "{{ lookup('env', 'TOWER_HOST') }}"
-        tower_username: "{{ lookup('env', 'TOWER_USERNAME') }}"
-        tower_password: "{{ lookup('env', 'TOWER_PASSWORD') }}"
-        validate_certs: "{{ lookup('env', 'TOWER_VALIDATE_CERTS') | default(false), true) }}"
-        name: "{{ hostname }}"
+        tower_host: "{{ tower_hostname }}"
+        tower_username: "{{ tower_username }}"
+        tower_password: "{{ tower_password }}"
+        validate_certs: no
+        name: "{{ vsphere_name }}.lab.msp.redhat.com"
         inventory: "{{ tower_inventory }}"
         variables: "{{ host_variables }}"
