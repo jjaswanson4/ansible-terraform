@@ -24,6 +24,20 @@
     - name: Set Tower oath Token
       set_fact:
         tower_oauthtoken: "{{ user_token.json.token }}"
+    - name: Add tower inventory
+      include_role:
+        name: redhat_cop.tower_configuration.inventories
+      vars:
+        tower_inventories:
+          - name: VMware
+            organization: Default
+    - name: Addgroup to inventory
+      include_role:
+        name: redhat_cop.tower_configuration.groups
+      vars:
+        tower_groups:
+          - name: provisioning
+            inventory: VMware
     - name: Add project
       include_role:
         name: redhat_cop.tower_configuration.projects
@@ -33,7 +47,8 @@
             organization: "{{ tower_organization }}"
             scm_branch: master
             scm_type: git
-            scm_url: https://github.com/thequailman/ansible-terraform
+#            scm_url: https://github.com/thequailman/ansible-terraform
+            scm_url: https://github.com/jjaswanson4/ansible-terraform
     - name: Add terraform job template
       include_role:
         name: redhat_cop.tower_configuration.job_templates
@@ -45,6 +60,7 @@
             organization: "{{ tower_organization }}"
             project: Terraform Demo
             playbook: terraform.yaml
+            limit: provisioning
     - name: Add rhel job template
       include_role:
         name: redhat_cop.tower_configuration.job_templates
@@ -56,6 +72,29 @@
             organization: "{{ tower_organization }}"
             project: Terraform Demo
             playbook: rhel_config.yaml
+            limit: provisioning
+    - name: Add host addition job template
+      include_role:
+        name: redhat_cop.tower_configuration.job_templates
+      vars:
+        tower_templates:
+          - name: Terraform Demo - Add Host To Tower
+            credentials: "{{ tower_credentials_ssh }}"
+            inventory: "{{ tower_inventory }}"
+            organization: "{{ tower_organization }}"
+            project: Terraform Demo
+            playbook: add_host_to_tower.yaml
+    - name: Add mark job temaplate
+      include_role:
+        name: redhat_cop.tower_configuration.job_templates
+      vars:
+        tower_templates:
+          - name: Terraform Demo - Mark Host For Provisioning
+            credentials: "{{ tower_credentials_ssh }}"
+            inventory: "{{ tower_inventory }}"
+            organization: "{{ tower_organization }}"
+            project: Terraform Demo
+            playbook: mark_host_for_provisioning.yaml
     - name: Add workflow
       include_role:
         name: redhat_cop.tower_configuration.workflow_job_templates
@@ -89,6 +128,18 @@
                   variable: vsphere_network_ip
             state: present
             workflow_nodes:
+              - identifier: add_host_to_tower
+                all_parents_must_converge: false
+                unified_job_template: Terraform Demo - Add Host To Tower
+                state: present
+                success_nodes:
+                  - mark_for_provisioning
+              - identifier: mark_for_provisioning
+                all_parents_must_converge: false
+                unified_job_template: Terraform Demo - Mark Host For Provisioning
+                state: present
+                success_nodes:
+                  - terraform_apply
               - identifier: terraform_apply
                 all_parents_must_converge: false
                 unified_job_template: Terraform Demo - Terraform
