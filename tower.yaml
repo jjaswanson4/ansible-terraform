@@ -113,7 +113,7 @@
               tower_hostname: "{{ tower_hostname }}"
               tower_username: "{{ tower_username }}"
               tower_password: "{{ tower_password }}"
-              validate_certs: no
+              tower_validate_certs: "{{ tower_validate_certs }}"
               tower_inventory: "{{ tower_inventory }}"
             organization: "{{ tower_organization }}"
             survey_enabled: true
