@@ -15,3 +15,5 @@
         validate_certs: "{{ tower_validate_certs }}"
         name: "{{ vsphere_name }}.{{ vsphere_domain }}"
         inventory: VMware
+        variables:
+          ansible_host: "{{ vsphere_network_ip }}"
