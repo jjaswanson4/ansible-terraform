@@ -26,8 +26,28 @@
     tlog_scope_sssd: some
     tlog_users_sssd:
       - root
+
+  pre_tasks:
+    - name: install satellite certificate bundle
+      ansible.builtin.yum:
+        name: http://satellite05.lab.msp.redhat.com/pub/katello-ca-consumer-latest.noarch.rpm
+        state: present
+
+    - name: register to satellite
+      community.general.rhsm_subscription:
+        activation_key: ak-rhel8-production
+        org_id: 1
+
+    - name: enable repositories
+      community.general.rhsm_repository:
+      name:
+        - rhel-8-for-x86_64-baseos-rpms
+        - rhel-8-for-x86_64-appstream-rpms
+        - satellite-tools-6.8-for-rhel-8-x86_64-rpms
+      purge: yes
+
   roles:
-#   - register to satellite
+    - redhat.insights.insights_client
     - redhat.rhel_system_roles.selinux
     - redhat.rhel_system_roles.timesync
     - redhat.rhel_system_roles.metrics
