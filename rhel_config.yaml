@@ -53,7 +53,7 @@
         name:
           - rhel-8-for-x86_64-baseos-rpms
           - rhel-8-for-x86_64-appstream-rpms
-          - satellite-tools-6.8-for-rhel-8-x86_64-rpms
+          - satellite-tools-6.9-for-rhel-8-x86_64-rpms
         purge: yes
 
   roles:
