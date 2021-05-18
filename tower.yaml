@@ -84,11 +84,6 @@
             organization: "{{ tower_organization }}"
             project: Terraform Demo
             playbook: add_host_to_tower.yaml
-            extra_vars:
-              tower_host: "{{ tower_hostname }}"
-              tower_username: "{{ tower_username }}"
-              tower_password: "{{ tower_password }}"
-              validate_certs: no
     - name: Add mark job temaplate
       include_role:
         name: redhat_cop.tower_configuration.job_templates
@@ -115,6 +110,11 @@
               vsphere_network_cidr: "{{ vsphere_network_cidr }}"
               vsphere_network_gateway: "{{ vsphere_network_gateway }}"
               vsphere_template: "{{ vsphere_template }}"
+              tower_host: "{{ tower_hostname }}"
+              tower_username: "{{ tower_username }}"
+              tower_password: "{{ tower_password }}"
+              validate_certs: no
+              tower_inventory: "{{ tower_inventory }}"
             organization: "{{ tower_organization }}"
             survey_enabled: true
             survey_spec:
