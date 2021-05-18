@@ -2,7 +2,7 @@
 
 - name: apply standard RHEL configuration
   hosts:
-    - all
+    - "{{ vsphere_name }}"
   vars:
     # selinx vars
     selinux_policy: targeted
@@ -34,17 +34,17 @@
         state: present
 
     - name: register to satellite
-      community.general.rhsm_subscription:
+      community.general.redhat_subscription:
         activation_key: ak-rhel8-production
         org_id: 1
 
     - name: enable repositories
       community.general.rhsm_repository:
-      name:
-        - rhel-8-for-x86_64-baseos-rpms
-        - rhel-8-for-x86_64-appstream-rpms
-        - satellite-tools-6.8-for-rhel-8-x86_64-rpms
-      purge: yes
+        name:
+          - rhel-8-for-x86_64-baseos-rpms
+          - rhel-8-for-x86_64-appstream-rpms
+          - satellite-tools-6.8-for-rhel-8-x86_64-rpms
+        purge: yes
 
   roles:
     - redhat.insights.insights_client

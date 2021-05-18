@@ -3,12 +3,13 @@
   gather_facts: false
   hosts: localhost
   vars:
-    tower_hostname: ""
+    tower_credentials_ssh: root
+    tower_credentials_vmware: VMware
     tower_inventory: Localhost
-    tower_password: ""
     tower_organization: Default
-    tower_username: ""
     tower_validate_certs: false
+  vars_files:
+    - vars.yaml
   tasks:
     - name: Get token for use during play
       uri:
@@ -33,22 +34,13 @@
             scm_branch: master
             scm_type: git
             scm_url: https://github.com/thequailman/ansible-terraform
-    - name: Add job template - "add host to tower"
-      include_role:
-        name: redhat_cop.tower_configuration.job_templates
-      vars:
-        tower_templates:
-          - name: Terraform Demo - Add Host to Tower
-            inventory: "{{ tower_inventory }}"
-            organization: "{{ tower_organization }}"
-            project: Terraform Demo
-            playbook: add_host_to_tower.yaml
     - name: Add terraform job template
       include_role:
         name: redhat_cop.tower_configuration.job_templates
       vars:
         tower_templates:
           - name: Terraform Demo - Terraform
+            credentials: "{{ tower_credentials_vmware }}"
             inventory: "{{ tower_inventory }}"
             organization: "{{ tower_organization }}"
             project: Terraform Demo
@@ -59,25 +51,46 @@
       vars:
         tower_templates:
           - name: Terraform Demo - Ansible
+            credentials: "{{ tower_credentials_ssh }}"
             inventory: "{{ tower_inventory }}"
             organization: "{{ tower_organization }}"
             project: Terraform Demo
-            playbook: terraform.yaml
+            playbook: rhel_config.yaml
     - name: Add workflow
       include_role:
         name: redhat_cop.tower_configuration.workflow_job_templates
       vars:
         tower_workflows:
           - name: Terraform Demo
+            extra_vars:
+              vsphere_cluster: "{{ vsphere_cluster }}"
+              vsphere_datacenter: "{{ vsphere_datacenter }}"
+              vsphere_datastore: "{{ vsphere_datastore }}"
+              vsphere_domain: "{{ vsphere_domain }}"
+              vsphere_network: "{{ vsphere_network }}"
+              vsphere_network_cidr: "{{ vsphere_network_cidr }}"
+              vsphere_network_gateway: "{{ vsphere_network_gateway }}"
+              vsphere_template: "{{ vsphere_template }}"
             organization: "{{ tower_organization }}"
+            survey_enabled: true
+            survey_spec:
+              name: Survey
+              description: Please fill this in!
+              spec:
+                - question_name: Name
+                  question_description: What is the hostname going to be?
+                  required: true
+                  type: text
+                  variable: vsphere_name
+                - question_name: IP Address
+                  question_description: What is the IP address?
+                  required: true
+                  type: text
+                  variable: vsphere_network_ip
             state: present
             workflow_nodes:
-              - identifier: add_host_to_tower
-                unified_job_template: Terraform Demo - Add Host To Tower
-                state: present
-                success_nodes:
-                  - terraform
-              - identifier: terraform
+              - identifier: terraform_apply
+                all_parents_must_converge: false
                 unified_job_template: Terraform Demo - Terraform
                 state: present
                 success_nodes:
@@ -85,3 +98,15 @@
               - identifier: ansible
                 state: present
                 unified_job_template: Terraform Demo - Ansible
+                success_nodes:
+                  - wait_for_delete
+              - identifier: wait_for_delete
+                approval_node:
+                  name: Destroy instance
+                success_nodes:
+                  - terraform_destroy
+              - identifier: terraform_destroy
+                extra_vars:
+                  state: absent
+                unified_job_template: Terraform Demo - Terraform
+                state: present

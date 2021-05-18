@@ -3,7 +3,8 @@
   gather_facts: false
   hosts: localhost
   vars:
-    state_path: /tmp/terraform
+    state: present
+    state_file: /terraform/terraform.tfstate
     terraform_version: 0.15.1
   tasks:
     - name: Check terraform version
@@ -25,19 +26,32 @@
         dest: .bin
         src: /tmp/terraform.zip
       when: version.failed
+    - name: Check if state is present
+      file:
+        src: "{{ state_file }}"
+        dest: "{{ lookup('env', 'PWD') }}/terraform/terraform.tfstate"
+        state: link
     - name: Run terraform
       community.general.terraform:
         binary_path: "{{ lookup('env', 'PWD') }}/.bin/terraform"
         force_init: true
         project_path: "{{ lookup('env', 'PWD') }}/terraform/"
-        state: |
-          {% if destroy is defined %}
-          absent
-          {% else %}
-          present
-          {% endif %}
-        state_path: "{{ state_path }}"
-        variables: "{{ tfvars }}"
+        state: "{{ state }}"
+        state_file: "{{ state_file }}"
+        variables:
+          vsphere_cluster: "{{ vsphere_cluster }}"
+          vsphere_datacenter: "{{ vsphere_datacenter }}"
+          vsphere_datastore: "{{ vsphere_datastore }}"
+          vsphere_domain: "{{ vsphere_domain }}"
+          vsphere_hostname: "{{ lookup('env', 'VMWARE_HOST') }}"
+          vsphere_name: "{{ vsphere_name }}"
+          vsphere_network: "{{ vsphere_network }}"
+          vsphere_network_cidr: "{{ vsphere_network_cidr }}"
+          vsphere_network_gateway: "{{ vsphere_network_gateway }}"
+          vsphere_network_ip: "{{ vsphere_network_ip }}"
+          vsphere_password: "{{ lookup('env', 'VMWARE_PASSWORD') }}"
+          vsphere_template: "{{ vsphere_template }}"
+          vsphere_user: "{{ lookup('env', 'VMWARE_USER') }}"
       register: output
     - name: Print terraform output
       debug:
