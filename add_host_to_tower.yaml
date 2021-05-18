@@ -15,4 +15,3 @@
         validate_certs: no
         name: "{{ vsphere_name }}.{{ vsphere_domain }}"
         inventory: "{{ tower_inventory }}"
-        variables: "{{ host_variables }}"
