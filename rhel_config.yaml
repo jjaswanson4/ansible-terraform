@@ -40,6 +40,7 @@
     - name: install satellite certificate bundle
       ansible.builtin.yum:
         name: http://satellite05.lab.msp.redhat.com/pub/katello-ca-consumer-latest.noarch.rpm
+        disable_gpg_check: yes
         state: present
 
     - name: register to satellite
