@@ -13,6 +13,6 @@
         tower_username: "{{ tower_username }}"
         tower_password: "{{ tower_password }}"
         validate_certs: no
-        name: "{{ vsphere_name }}.lab.msp.redhat.com"
+        name: "{{ vsphere_name }}.{{ vsphere_domain }}"
         inventory: "{{ tower_inventory }}"
         variables: "{{ host_variables }}"
