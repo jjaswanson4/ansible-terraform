@@ -9,7 +9,7 @@
   tasks:
     - name: create host in tower inventory
       ansible.tower.tower_host:
-        tower_host: "{{ tower_host }}"
+        tower_host: "{{ tower_hostname }}"
         tower_username: "{{ tower_username }}"
         tower_password: "{{ tower_password }}"
         validate_certs: no
