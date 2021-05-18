@@ -110,7 +110,7 @@
               vsphere_network_cidr: "{{ vsphere_network_cidr }}"
               vsphere_network_gateway: "{{ vsphere_network_gateway }}"
               vsphere_template: "{{ vsphere_template }}"
-              tower_host: "{{ tower_hostname }}"
+              tower_hostname: "{{ tower_hostname }}"
               tower_username: "{{ tower_username }}"
               tower_password: "{{ tower_password }}"
               validate_certs: no
