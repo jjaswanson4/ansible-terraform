@@ -1,0 +1,6 @@
+*.hcl
+*.tfstate
+*.tfstate.backup
+.bin
+.terraform
+vars.yaml

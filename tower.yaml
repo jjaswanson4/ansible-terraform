@@ -1,0 +1,72 @@
+- name: Setup demo in Tower
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    tower_hostname: ""
+    tower_inventory: Localhost
+    tower_password: ""
+    tower_organization: Default
+    tower_username: ""
+    tower_validate_certs: false
+  tasks:
+    - name: Get token for use during play
+      uri:
+        url: "https://{{ tower_hostname }}/api/v2/tokens/"
+        method: POST
+        user: "{{ tower_username }}"
+        password: "{{ tower_password }}"
+        force_basic_auth: yes
+        status_code: 201
+        validate_certs: no
+      register: user_token
+    - name: Set Tower oath Token
+      set_fact:
+        tower_oauthtoken: "{{ user_token.json.token }}"
+    - name: Add project
+      include_role:
+        name: redhat_cop.tower_configuration.projects
+      vars:
+        tower_projects:
+          - name: Terraform Demo
+            organization: "{{ tower_organization }}"
+            scm_branch: master
+            scm_type: git
+            scm_url: https://github.com/thequailman/ansible-terraform
+    - name: Add terraform job template
+      include_role:
+        name: redhat_cop.tower_configuration.job_templates
+      vars:
+        tower_templates:
+          - name: Terraform Demo - Terraform
+            inventory: "{{ tower_inventory }}"
+            organization: "{{ tower_organization }}"
+            project: Terraform Demo
+            playbook: terraform.yaml
+    - name: Add rhel job template
+      include_role:
+        name: redhat_cop.tower_configuration.job_templates
+      vars:
+        tower_templates:
+          - name: Terraform Demo - Ansible
+            inventory: "{{ tower_inventory }}"
+            organization: "{{ tower_organization }}"
+            project: Terraform Demo
+            playbook: terraform.yaml
+    - name: Add workflow
+      include_role:
+        name: redhat_cop.tower_configuration.workflow_job_templates
+      vars:
+        tower_workflows:
+          - name: Terraform Demo
+            organization: "{{ tower_organization }}"
+            state: present
+            workflow_nodes:
+              - identifier: terraform
+                unified_job_template: Terraform Demo - Terraform
+                state: present
+                success_nodes:
+                  - ansible
+              - identifier: ansible
+                state: present
+                unified_job_template: Terraform Demo - Ansible

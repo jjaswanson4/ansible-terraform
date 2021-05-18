@@ -1,0 +1,13 @@
+variable vsphere_cluster {}
+variable vsphere_datacenter {}
+variable vsphere_datastore {}
+variable vsphere_domain {}
+variable vsphere_hostname {}
+variable vsphere_name {}
+variable vsphere_network {}
+variable vsphere_network_cidr {}
+variable vsphere_network_gateway {}
+variable vsphere_network_ip {}
+variable vsphere_password {}
+variable vsphere_template {}
+variable vsphere_user {}

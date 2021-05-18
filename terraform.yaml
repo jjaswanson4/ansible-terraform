@@ -1,0 +1,44 @@
+- name: Deploy using Terraform
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    state_path: /tmp/terraform
+    terraform_version: 0.15.1
+  tasks:
+    - name: Check terraform version
+      shell: ".bin/terraform --version | grep {{ terraform_version }}"
+      changed_when: false
+      ignore_errors: true
+      register: version
+    - name: Download terraform
+      get_url: 
+        dest: /tmp/terraform.zip
+        url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
+      when: version.failed
+    - name: Bin directory
+      file:
+        path: .bin
+        state: directory
+    - name: Unzip terraform
+      unarchive: 
+        dest: .bin
+        src: /tmp/terraform.zip
+      when: version.failed
+    - name: Run terraform
+      community.general.terraform:
+        binary_path: "{{ lookup('env', 'PWD') }}/.bin/terraform"
+        force_init: true
+        project_path: "{{ lookup('env', 'PWD') }}/terraform/"
+        state: |
+          {% if destroy is defined %}
+          absent
+          {% else %}
+          present
+          {% endif %}
+        state_path: "{{ state_path }}"
+        variables: "{{ tfvars }}"
+      register: output
+    - name: Print terraform output
+      debug:
+        msg: "{{ output.stdout.split('\n') }}"
