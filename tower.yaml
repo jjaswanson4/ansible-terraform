@@ -33,6 +33,16 @@
             scm_branch: master
             scm_type: git
             scm_url: https://github.com/thequailman/ansible-terraform
+    - name: Add job template - "add host to tower"
+      include_role:
+        name: redhat_cop.tower_configuration.job_templates
+      vars:
+        tower_templates:
+          - name: Terraform Demo - Add Host to Tower
+            inventory: "{{ tower_inventory }}"
+            organization: "{{ tower_organization }}"
+            project: Terraform Demo
+            playbook: add_host_to_tower.yaml
     - name: Add terraform job template
       include_role:
         name: redhat_cop.tower_configuration.job_templates
@@ -62,6 +72,11 @@
             organization: "{{ tower_organization }}"
             state: present
             workflow_nodes:
+              - identifier: add_host_to_tower
+                unified_job_template: Terraform Demo - Add Host To Tower
+                state: present
+                success_nodes:
+                  - terraform
               - identifier: terraform
                 unified_job_template: Terraform Demo - Terraform
                 state: present
