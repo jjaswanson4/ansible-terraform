@@ -30,12 +30,12 @@
   pre_tasks:
     - name: set /etc/resolv.conf
       ansible.builtin.copy:
-      dest: /etc/resolv.conf
-      content: |
-        search lab.msp.redhat.com redhat.com
-        nameserver 10.15.108.148
-        nameserver 10.15.108.109
-        options rotate timeout:1 retries:1
+        dest: /etc/resolv.conf
+        content: |
+          search lab.msp.redhat.com redhat.com
+          nameserver 10.15.108.148
+          nameserver 10.15.108.109
+          options rotate timeout:1 retries:1
 
     - name: install satellite certificate bundle
       ansible.builtin.yum:
