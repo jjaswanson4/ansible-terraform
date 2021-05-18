@@ -14,4 +14,4 @@
         tower_password: "{{ tower_password }}"
         validate_certs: "{{ tower_validate_certs }}"
         name: "{{ vsphere_name }}.{{ vsphere_domain }}"
-        inventory: "{{ tower_inventory }}"
+        inventory: VMware
